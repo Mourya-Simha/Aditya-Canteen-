@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya College Canteen - Food Delivery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🍽️ Campus Canteen</div>
+                <div class="search-bar" id="searchBarContainer">
+                    <input type="text" id="searchInput" placeholder="Search for food items...">
+                </div>
+                <div class="header-actions">
+                    <div id="userInfo" class="user-info" style="display: none;">
+                        <div class="welcome-text">Welcome, <span id="userName"></span>!</div>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                    <div id="authButtons">
+                        <button class="auth-btn" onclick="showLogin()">Login</button>
+                        <button class="auth-btn" onclick="showSignup()">Sign Up</button>
+                    </div>
+                    <button class="cart-btn" onclick="toggleCart()" style="display: none;" id="cartButton">
+                        🛒 Cart
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login/Signup Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="container">
+            <div class="auth-box">
+                <div id="loginForm">
+                    <h2>Welcome Back!</h2>
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <form class="auth-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                            Login to Your Account
+                        </button>
+                    </form>
+                    <div class="auth-toggle">
+                        Don't have an account? <a href="#" onclick="showSignup()">Sign up here</a>
+                    </div>
+                </div>
+
+                <div id="signupForm" style="display: none;">
+                    <h2>Create Account</h2>
+                    <div id="signupError" class="error-message" style="display: none;"></div>
+                    <div id="signupSuccess" class="success-message" style="display: none;"></div>
+                    <form class="auth-form" onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label for="signupName">Full Name</label>
+                            <input type="text" id="signupName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail">Email Address</label>
+                            <input type="email" id="signupEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupRollNumber">Roll Number</label>
+                            <input type="text" id="signupRollNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPhone">Phone Number</label>
+                            <input type="tel" id="signupPhone" pattern="[0-9]{10}" placeholder="10-digit mobile number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword">Password</label>
+                            <input type="password" id="signupPassword" minlength="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupConfirmPassword">Confirm Password</label>
+                            <input type="password" id="signupConfirmPassword" minlength="6" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                            Create Your Account
+                        </button>
+                    </form>
+                    <div class="auth-toggle">
+                        Already have an account? <a href="#" onclick="showLogin()">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content hidden">
+        <div class="container">
+            <div class="hero">
+                <h1>Delicious Food, Delivered to Your Block!</h1>
+                <p>Order your favorite meals from our college canteen and get them delivered right to your location on campus.</p>
+            </div>
+
+            <div class="categories">
+                <button class="category-btn active" onclick="filterCategory('all')">All Items</button>
+                <button class="category-btn" onclick="filterCategory('breakfast')">Breakfast</button>
+                <button class="category-btn" onclick="filterCategory('lunch')">Lunch</button>
+                <button class="category-btn" onclick="filterCategory('snacks')">Snacks</button>
+                <button class="category-btn" onclick="filterCategory('beverages')">Beverages</button>
+            </div>
+
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Required Message -->
+    <div id="loginRequiredContent" class="main-content">
+        <div class="container">
+            <div class="login-required-message">
+                <h3>🔐 Login Required</h3>
+                <p>Please login or create an account to browse our delicious menu and place orders.</p>
+                <div style="margin-top: 2rem;">
+                    <button class="auth-btn" onclick="showLogin()" style="margin-right: 1rem;">Login</button>
+                    <button class="auth-btn" onclick="showSignup()">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Now Modal -->
+    <div id="buyNowModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Quick Order - Student Details</h2>
+            
+            <div class="order-summary" id="orderSummary">
+                <!-- Order details will be populated here -->
+            </div>
+
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="rollNumber">Student Roll Number *</label>
+                    <input type="text" id="rollNumber" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="campusBlock">Campus Block *</label>
+                    <select id="campusBlock" required>
+                        <option value="">Select Block</option>
+                        <option value="Academic Block A">Academic Block A</option>
+                        <option value="Academic Block B">Academic Block B</option>
+                        <option value="Hostel Block 1">Hostel Block 1</option>
+                        <option value="Hostel Block 2">Hostel Block 2</option>
+                        <option value="Hostel Block 3">Hostel Block 3</option>
+                        <option value="Library Block">Library Block</option>
+                        <option value="Sports Complex">Sports Complex</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="degree">Degree Program *</label>
+                    <select id="degree" required>
+                        <option value="">Select Degree</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="M.Tech">M.Tech</option>
+                        <option value="Diploma">Diploma</option>
+                        <option value="MBA">MBA</option>
+                        <option value="MCA">MCA</option>
+                        <option value="B.Sc">B.Sc</option>
+                        <option value="M.Sc">M.Sc</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="floorNumber">Floor Number *</label>
+                    <select id="floorNumber" required>
+                        <option value="">Select Floor</option>
+                        <option value="Ground Floor">Ground Floor</option>
+                        <option value="1st Floor">1st Floor</option>
+                        <option value="2nd Floor">2nd Floor</option>
+                        <option value="3rd Floor">3rd Floor</option>
+                        <option value="4th Floor">4th Floor</option>
+                        <option value="5th Floor">5th Floor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number *</label>
+                    <input type="tel" id="phoneNumber" pattern="[0-9]{10}" placeholder="10-digit mobile number" required readonly>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Send Order via WhatsApp 📱
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button onclick="toggleCart()" style="float: right; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be populated here -->
+        </div>
+        <div class="cart-total">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <strong>Total: ₹<span id="cartTotal">0</span></strong>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="proceedToCheckout()">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
