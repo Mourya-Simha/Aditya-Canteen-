@@ -67,7 +67,6 @@ Aditya Canteen/
 Clone the Repository:
 
 Bash
-git clone https://github.com/your-username/aditya-canteen.git
 Navigate to the Folder:
 
 Bash
